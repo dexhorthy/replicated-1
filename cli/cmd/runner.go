@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/replicatedhq/replicated/pkg/util"
 	"io"
 	"text/tabwriter"
 	"time"
@@ -31,8 +32,9 @@ type runners struct {
 	dir              string
 	w                *tabwriter.Writer
 
-	rootCmd *cobra.Command
-	args    runnerArgs
+	rootCmd       *cobra.Command
+	args          runnerArgs
+	helmConverter util.HelmConverter
 }
 
 type runnerArgs struct {

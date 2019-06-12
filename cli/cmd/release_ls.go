@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func (r *runners) IniReleaseList(parent *cobra.Command) {
+func (r *runners) InitReleaseList(parent *cobra.Command) {
 	cmd := &cobra.Command{
 		Use:   "ls",
 		Short: "List all of an app's releases",

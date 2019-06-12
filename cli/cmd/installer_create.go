@@ -11,9 +11,9 @@ import (
 
 func (r *runners) InitInstallerCreate(parent *cobra.Command) {
 	cmd := &cobra.Command{
-		Use:   "create",
-		Short: "Create a new installer spec",
-		Long:  `Create a new installer spec by providing YAML configuration for a https://kurl.sh cluster.`,
+		Use:          "create",
+		Short:        "Create a new installer spec",
+		Long:         `Create a new installer spec by providing YAML configuration for a https://kurl.sh cluster.`,
 		SilenceUsage: true,
 	}
 

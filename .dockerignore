@@ -2,7 +2,5 @@ dist/
 .glide
 gen/docs
 logs/
-.DS_Store
-bin/
-vendor/
 .idea/
+Dockerfile

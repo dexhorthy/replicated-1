@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/replicatedhq/replicated/pkg/util"
 	"io"
 	"os"
 	"path/filepath"
@@ -142,10 +143,11 @@ func Execute(rootCmd *cobra.Command, stdin io.Reader, stdout io.Writer, stderr i
 	}
 	runCmds.InitReleaseInspect(releaseCmd)
 	runCmds.InitReleaseDownload(releaseCmd)
-	runCmds.IniReleaseList(releaseCmd)
+	runCmds.InitReleaseList(releaseCmd)
 	runCmds.InitReleaseUpdate(releaseCmd)
 	runCmds.InitReleasePromote(releaseCmd)
 	runCmds.InitReleaseLint(releaseCmd)
+	runCmds.InitPrepareHelmValues(releaseCmd)
 
 	collectorsCmd := runCmds.InitCollectorsCommand(runCmds.rootCmd)
 	runCmds.InitCollectorList(collectorsCmd)
@@ -251,6 +253,8 @@ func Execute(rootCmd *cobra.Command, stdin io.Reader, stdout io.Writer, stderr i
 			runCmds.appID = app.ID
 			runCmds.appSlug = app.Slug
 		}
+
+		runCmds.helmConverter = util.NewHelmConverter()
 
 		return nil
 	}
