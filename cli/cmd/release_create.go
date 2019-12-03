@@ -166,41 +166,16 @@ func (r *runners) releaseCreate(cmd *cobra.Command, args []string) error {
 
 // todo:dex
 // this has some kots-only logic that is leaking through the Client interface
-// abstraction. Need to clean this up, probably a GetOrCreateChannel method on
+// abstraction. Need to clean this up, probably a GetChannelByName method on
 // all the Client impls
 func (r *runners) getOrCreateChannelForPromotion() (string, error) {
-	channels, err := r.api.ListChannels(r.appID, r.appType)
+
+	description := "" // todo: do we want a flag for the desired channel description
+
+	channel, err := r.api.GetChannelByName(r.appID, r.appType, r.args.createReleasePromote, description, true)
 	if err != nil {
-		return "", err
+		return "", errors.Wrapf(err, "get-or-create channel %q", r.args.createReleasePromote)
 	}
 
-	promoteChannelIDs := make([]string, 0)
-	for _, c := range channels {
-		if c.ID == r.args.createReleasePromote || c.Name == r.args.createReleasePromote {
-			promoteChannelIDs = append(promoteChannelIDs, c.ID)
-		}
-	}
-
-	if len(promoteChannelIDs) == 0 {
-
-		// get-or-create only supported for KOTS apps at the moment
-		shouldCreateChannel := r.args.createReleasePromoteEnsureChannel && r.appType == "kots"
-
-		if shouldCreateChannel {
-			channelID, err := r.kotsAPI.CreateChannel(r.appID, r.args.createReleasePromote, "")
-			if err != nil {
-				return "", errors.Wrapf(err, "create channel %q ", channelID)
-			}
-			fmt.Fprintf(r.w, "Created channel %q with ID %q", r.args.createReleasePromote, channelID)
-
-			return channelID, nil
-		}
-
-		return "", fmt.Errorf("Channel %q not found", r.args.createReleasePromote)
-	}
-
-	if len(promoteChannelIDs) > 1 {
-		return "", fmt.Errorf("Channel %q is ambiguous. Please use channel ID", r.args.createReleasePromote)
-	}
-	return promoteChannelIDs[0], nil
+	return channel.ID, nil
 }

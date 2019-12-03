@@ -20,9 +20,11 @@ type CustomerData struct {
 }
 
 type Customer struct {
-	ID       string         `json:"id"`
-	Name     string         `json:"name"`
-	Channels []*KotsChannel `json:"channels"`
+	ID        string         `json:"id"`
+	Name      string         `json:"name"`
+	Channels  []*KotsChannel `json:"channels"`
+	Type      string         `json:"type"`
+	ExpiresAt string         `json:"expiresAt"`
 }
 
 func (c *GraphQLClient) ListCustomers(appID string) ([]types.Customer, error) {
@@ -35,6 +37,8 @@ func (c *GraphQLClient) ListCustomers(appID string) ([]types.Customer, error) {
             customers {
 		        id
 		        name 
+				type
+				expiresAt
 		        channels {
 		            id
 		            name
@@ -46,7 +50,7 @@ func (c *GraphQLClient) ListCustomers(appID string) ([]types.Customer, error) {
 	`,
 
 		Variables: map[string]interface{}{
-			"appId": appID,
+			"appId":   appID,
 			"appType": "kots",
 		},
 	}
@@ -68,11 +72,15 @@ func (c *GraphQLClient) ListCustomers(appID string) ([]types.Customer, error) {
 			}
 			kotsChannels = append(kotsChannels, channel)
 		}
-		customers = append(customers, types.Customer{
+		customer := types.Customer{
 			ID:       kotsCustomer.ID,
 			Name:     kotsCustomer.Name,
+			Type:     kotsCustomer.Type,
 			Channels: kotsChannels,
-		})
+		}
+
+
+		customers = append(customers, customer)
 	}
 
 	return customers, nil
