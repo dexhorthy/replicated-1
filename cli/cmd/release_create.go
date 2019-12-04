@@ -34,8 +34,8 @@ func (r *runners) InitReleaseCreate(parent *cobra.Command) {
 	cmd.Flags().StringVar(&r.args.createReleaseYamlDir, "yaml-dir", "", "The directory containing multiple yamls for a Kots release.  Cannot be used with the `yaml` flag.")
 	cmd.Flags().StringVar(&r.args.createReleasePromote, "promote", "", "Channel name or id to promote this release to")
 	cmd.Flags().StringVar(&r.args.createReleasePromoteNotes, "release-notes", "", "When used with --promote <channel>, sets the **markdown** release notes")
-	cmd.Flags().BoolVar(&r.args.createReleasePromoteRequired, "required", false, "When used with --promote <channel>, marks this release as required during upgrades.")
 	cmd.Flags().StringVar(&r.args.createReleasePromoteVersion, "version", "", "When used with --promote <channel>, sets the version label for the release in this channel")
+	cmd.Flags().BoolVar(&r.args.createReleasePromoteRequired, "required", false, "When used with --promote <channel>, marks this release as required during upgrades.")
 	cmd.Flags().BoolVar(&r.args.createReleasePromoteEnsureChannel, "ensure-channel", false, "When used with --promote <channel>, will create the channel if it doesn't exist")
 
 	cmd.RunE = r.releaseCreate
@@ -164,16 +164,17 @@ func (r *runners) releaseCreate(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// todo:dex
-// this has some kots-only logic that is leaking through the Client interface
-// abstraction. Need to clean this up, probably a GetChannelByName method on
-// all the Client impls
 func (r *runners) getOrCreateChannelForPromotion() (string, error) {
 
 	description := "" // todo: do we want a flag for the desired channel description
 
-	channel, err := r.api.GetChannelByName(r.appID, r.appType, r.args.createReleasePromote, description, true)
-	if err != nil {
+	channel, err := r.api.GetChannelByName(
+		r.appID,
+		r.appType,
+		r.args.createReleasePromote,
+		description,
+		true,
+	); if err != nil {
 		return "", errors.Wrapf(err, "get-or-create channel %q", r.args.createReleasePromote)
 	}
 
